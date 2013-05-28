@@ -1,0 +1,15 @@
+;;;; learned from `local-project-system-files` in quicklisp
+;;;; to batchly add local projects into asdf:*central-registry*
+;;;; so ql:quickload could find them.
+#+:asdf
+(dolist (local-projects-dir '(#P"d:/Yunio/open-projects/" #P"d:/Yunio/quicklisp/local-projects/"))
+  (let ((wild (merge-pathnames "**/*.asd" local-projects-dir)))
+    (mapcar #'(lambda (asd-path)
+                (push (make-pathname :name nil
+                                     :type nil
+                                     :defaults asd-path)
+                      asdf:*central-registry*))
+            (sort (directory wild)
+                  #'<
+                  :key (lambda (file)
+                         (length (namestring file)))))))
